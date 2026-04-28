@@ -30,7 +30,7 @@ export class Home implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    this.userName.set(user?.nombre || user?.userName ?? '');
+    this.userName.set(user?.nombre || user?.userName || '');
     this.isAdmin.set(this.authService.hasRole('Administrador'));
     this.roles.set(this.authService.getUserRoles());
 

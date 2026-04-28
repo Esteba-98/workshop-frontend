@@ -18,7 +18,7 @@ export class Layout implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    this.userName.set(user?.nombre || user?.userName ?? '');
+    this.userName.set(user?.nombre || user?.userName || '');
     this.roles.set(user?.roles ?? []);
     this.userRole.set(user?.roles?.[0] ?? 'Usuario');
   }
