@@ -1,0 +1,187 @@
+<!-- Botones de acción — se ocultan al imprimir -->
+<div class="print:hidden fixed top-0 left-0 right-0 bg-white border-b border-slate-200 px-6 py-3 flex items-center gap-3 z-50 shadow-sm">
+  <button (click)="volver()" class="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 text-sm transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Volver
+  </button>
+  <span class="text-slate-200">|</span>
+  <span class="text-slate-500 text-sm flex-1">Vista previa de impresión</span>
+  <button (click)="imprimir()"
+    class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg px-4 py-2 text-sm transition-colors shadow-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+    </svg>
+    Imprimir / Guardar PDF
+  </button>
+</div>
+
+<!-- Contenido imprimible -->
+<div class="pt-16 print:pt-0 bg-slate-100 print:bg-white min-h-screen">
+  @if (loading()) {
+    <div class="flex justify-center py-24 print:hidden">
+      <svg class="animate-spin w-7 h-7 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+      </svg>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="max-w-2xl mx-auto px-6 py-8 print:hidden">
+      <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+        <p class="text-red-600 text-sm">{{ errorMessage() }}</p>
+      </div>
+    </div>
+  }
+
+  @if (orden()) {
+    <!-- Hoja A4 simulada -->
+    <div class="max-w-3xl mx-auto bg-white shadow-lg print:shadow-none my-6 print:my-0 p-10 print:p-8">
+
+      <!-- Encabezado -->
+      <div class="flex items-start justify-between border-b-2 border-slate-800 pb-5 mb-6">
+        <div>
+          <div class="flex items-center gap-3 mb-1">
+            <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-xl font-black text-slate-800 leading-none">WorkShop</h1>
+              <p class="text-xs text-slate-500">Taller Mecánico</p>
+            </div>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-1">Orden de Trabajo</p>
+          <p class="text-3xl font-black text-orange-500">{{ orden()!.folio }}</p>
+          <p class="text-xs text-slate-400 mt-1">Fecha: {{ orden()!.fecha | date:'dd/MM/yyyy' }}</p>
+          @if (orden()!.fechaEntrega) {
+            <p class="text-xs text-slate-400">Entrega est.: {{ orden()!.fechaEntrega | date:'dd/MM/yyyy' }}</p>
+          }
+          <span class="inline-block mt-2 text-xs font-semibold px-2.5 py-0.5 rounded-full
+            {{ orden()!.estado === 'Completado' ? 'bg-green-100 text-green-700' :
+               orden()!.estado === 'En Proceso'  ? 'bg-blue-100 text-blue-700' :
+               orden()!.estado === 'Cancelado'   ? 'bg-red-100 text-red-700' :
+                                                   'bg-amber-100 text-amber-700' }}">
+            {{ orden()!.estado }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Datos cliente / vehículo -->
+      <div class="grid grid-cols-2 gap-6 mb-6">
+        <div class="bg-slate-50 rounded-lg p-4">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Cliente</p>
+          <p class="text-base font-bold text-slate-800">{{ orden()!.clienteNombre }}</p>
+          <p class="text-sm text-slate-500">{{ orden()!.clienteTelefono }}</p>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-4">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Vehículo</p>
+          <p class="text-base font-bold text-slate-800 font-mono">{{ orden()!.vehiculoPlaca }}</p>
+          <p class="text-sm text-slate-500">{{ orden()!.vehiculoMarca }} {{ orden()!.vehiculoModelo }} · {{ orden()!.vehiculoAnio }}</p>
+        </div>
+      </div>
+
+      <!-- Mecánico -->
+      @if (orden()!.mecanicoNombre) {
+        <div class="flex items-center gap-2 mb-5">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Mecánico asignado:</p>
+          <p class="text-sm text-slate-700 font-semibold">{{ orden()!.mecanicoNombre }}</p>
+        </div>
+      }
+
+      <!-- Descripción -->
+      @if (orden()!.descripcion) {
+        <div class="mb-4">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Descripción del problema</p>
+          <p class="text-sm text-slate-700 bg-slate-50 rounded-lg p-3">{{ orden()!.descripcion }}</p>
+        </div>
+      }
+
+      <!-- Diagnóstico -->
+      @if (orden()!.diagnostico) {
+        <div class="mb-4">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Diagnóstico técnico</p>
+          <p class="text-sm text-slate-700 bg-slate-50 rounded-lg p-3">{{ orden()!.diagnostico }}</p>
+        </div>
+      }
+
+      <!-- Items -->
+      <div class="mb-4">
+        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Productos y Servicios</p>
+        <table class="w-full border border-slate-200 rounded-lg overflow-hidden text-sm">
+          <thead>
+            <tr class="bg-slate-100">
+              <th class="text-left px-4 py-2.5 text-xs font-bold text-slate-600">Descripción</th>
+              <th class="text-center px-3 py-2.5 text-xs font-bold text-slate-600">Tipo</th>
+              <th class="text-right px-3 py-2.5 text-xs font-bold text-slate-600">Cant.</th>
+              <th class="text-right px-3 py-2.5 text-xs font-bold text-slate-600">P. Unitario</th>
+              <th class="text-right px-4 py-2.5 text-xs font-bold text-slate-600">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (orden()!.items.length === 0) {
+              <tr>
+                <td colspan="5" class="px-4 py-4 text-center text-slate-400 text-xs">Sin items registrados</td>
+              </tr>
+            }
+            @for (item of orden()!.items; track item.id) {
+              <tr class="border-t border-slate-100">
+                <td class="px-4 py-2.5 text-slate-800 font-medium">{{ item.nombre }}</td>
+                <td class="px-3 py-2.5 text-center">
+                  <span class="text-xs px-2 py-0.5 rounded-full
+                    {{ item.tipo === 'Producto' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600' }}">
+                    {{ item.tipo }}
+                  </span>
+                </td>
+                <td class="px-3 py-2.5 text-right text-slate-600">{{ item.cantidad }}</td>
+                <td class="px-3 py-2.5 text-right text-slate-600">{{ item.precioUnitario | currency:'COP':'symbol':'1.0-0' }}</td>
+                <td class="px-4 py-2.5 text-right text-slate-800 font-semibold">{{ item.subtotal | currency:'COP':'symbol':'1.0-0' }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr class="bg-slate-100 border-t-2 border-slate-300">
+              <td colspan="4" class="px-4 py-3 text-right text-sm font-bold text-slate-700">TOTAL</td>
+              <td class="px-4 py-3 text-right text-base font-black text-orange-600">
+                {{ orden()!.total | currency:'COP':'symbol':'1.0-0' }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Observaciones -->
+      @if (orden()!.observaciones) {
+        <div class="mb-6">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Observaciones</p>
+          <p class="text-sm text-slate-700 bg-slate-50 rounded-lg p-3">{{ orden()!.observaciones }}</p>
+        </div>
+      }
+
+      <!-- Firma -->
+      <div class="grid grid-cols-2 gap-10 mt-10 pt-6 border-t border-slate-200">
+        <div class="text-center">
+          <div class="border-b border-slate-400 mb-2 h-10"></div>
+          <p class="text-xs text-slate-500">Firma del cliente</p>
+          <p class="text-xs text-slate-400">{{ orden()!.clienteNombre }}</p>
+        </div>
+        <div class="text-center">
+          <div class="border-b border-slate-400 mb-2 h-10"></div>
+          <p class="text-xs text-slate-500">Firma del mecánico</p>
+          <p class="text-xs text-slate-400">{{ orden()!.mecanicoNombre ?? 'Sin asignar' }}</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <p class="text-center text-xs text-slate-400 mt-8 print:mt-4">
+        Generado el {{ orden()!.fecha | date:'dd/MM/yyyy HH:mm' }} — WorkShop Taller Mecánico
+      </p>
+
+    </div>
+  }
+</div>

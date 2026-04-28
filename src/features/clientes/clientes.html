@@ -1,0 +1,90 @@
+<!-- Modal confirmación -->
+@if (confirmando()) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full border border-slate-200">
+      <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+      </div>
+      <h3 class="text-slate-800 font-semibold text-center mb-2">¿Confirmar eliminación?</h3>
+      <p class="text-slate-500 text-sm text-center mb-6">{{ confirmMsg() }}</p>
+      <div class="flex gap-3">
+        <button (click)="cancelarEliminar()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg px-4 py-2 text-sm transition-colors">Cancelar</button>
+        <button (click)="confirmarEliminar()" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg px-4 py-2 text-sm transition-colors">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="px-6 py-8">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-xl font-bold text-slate-800">Clientes</h2>
+      <p class="text-slate-500 text-sm mt-0.5">Gestión de clientes del taller</p>
+    </div>
+    <button (click)="irACrear()" class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg px-4 py-2 text-sm transition-colors shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+      Nuevo cliente
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="flex justify-center py-16"><svg class="animate-spin w-7 h-7 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg></div>
+  }
+
+  @if (errorMessage()) {
+    <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-4"><p class="text-red-600 text-sm">{{ errorMessage() }}</p></div>
+  }
+
+  @if (!loading() && !errorMessage() && clientes().length === 0) {
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
+      <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+      </div>
+      <p class="text-slate-600 font-medium">No hay clientes registrados.</p>
+      <p class="text-slate-400 text-sm mt-1">Crea el primero haciendo clic en "Nuevo cliente".</p>
+    </div>
+  }
+
+  @if (clientes().length > 0) {
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200">
+            <th class="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Nombre</th>
+            <th class="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
+            <th class="text-left px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Teléfono</th>
+            <th class="text-right px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cliente of clientes(); track cliente.id) {
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+              <td class="px-5 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-orange-600 text-sm font-bold">{{ cliente.nombre.charAt(0).toUpperCase() }}</span>
+                  </div>
+                  <span class="text-slate-800 font-medium text-sm">{{ cliente.nombre }}</span>
+                </div>
+              </td>
+              <td class="px-5 py-4 text-slate-500 text-sm">{{ cliente.email }}</td>
+              <td class="px-5 py-4 text-slate-500 text-sm">{{ cliente.telefono }}</td>
+              <td class="px-5 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button (click)="irAEditar(cliente.id)" class="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    Editar
+                  </button>
+                  <button (click)="solicitarEliminar(cliente.id, cliente.nombre)" class="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
