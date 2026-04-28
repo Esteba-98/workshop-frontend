@@ -1,0 +1,20 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # cada 10 minutos
+  workflow_dispatch:          # también se puede correr manualmente
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend
+        run: |
+          curl -sf https://workshop-api-cp3o.onrender.com/health \
+            --max-time 30 \
+            --retry 2 \
+            --retry-delay 5 \
+            -o /dev/null \
+            && echo "Backend OK" \
+            || echo "Backend no respondio (puede estar iniciando)"
