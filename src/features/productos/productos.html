@@ -93,6 +93,19 @@
     }
   </div>
 
+  @if (!loading() && productos().length > 0) {
+    <div class="mb-4">
+      <div class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input type="text" placeholder="Buscar por nombre o código..."
+          [value]="busqueda()" (input)="busqueda.set($any($event.target).value)"
+          class="w-full pl-9 pr-4 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition" />
+      </div>
+    </div>
+  }
+
   @if (loading()) {
     <div class="flex justify-center py-16"><svg class="animate-spin w-7 h-7 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg></div>
   }
@@ -113,7 +126,13 @@
     </div>
   }
 
-  @if (productos().length > 0) {
+  @if (productosFiltrados().length === 0 && busqueda() && !loading()) {
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+      <p class="text-slate-500 text-sm">No se encontraron productos para "<strong>{{ busqueda() }}</strong>"</p>
+    </div>
+  }
+
+  @if (productosFiltrados().length > 0) {
 
     <!-- Vista móvil: cards -->
     <div class="md:hidden space-y-3">
@@ -164,7 +183,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (p of productos(); track p.id) {
+          @for (p of productosFiltrados(); track p.id) {
             <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
               <td class="px-5 py-4 text-slate-800 text-sm font-medium">{{ p.nombre }}</td>
               <td class="px-5 py-4"><span class="bg-slate-100 text-slate-600 font-mono text-xs px-2 py-1 rounded">{{ p.codigo }}</span></td>

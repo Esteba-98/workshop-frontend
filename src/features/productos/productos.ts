@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ProductoService, ImportarResultado } from '../../app/core/services/producto.service';
@@ -17,7 +17,17 @@ export class Productos implements OnInit {
   private router = inject(Router);
 
   productos = signal<Producto[]>([]);
+  busqueda = signal('');
   loading = signal(false);
+
+  productosFiltrados = computed(() => {
+    const q = this.busqueda().toLowerCase().trim();
+    if (!q) return this.productos();
+    return this.productos().filter(p =>
+      p.nombre.toLowerCase().includes(q) ||
+      p.codigo?.toLowerCase().includes(q)
+    );
+  });
   errorMessage = signal('');
   canCreate = signal(false);
   canEdit = signal(false);
