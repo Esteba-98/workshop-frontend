@@ -15,7 +15,7 @@
   </div>
 }
 
-<div class="px-6 py-8">
+<div class="px-4 sm:px-6 py-8">
   <div class="flex items-center justify-between mb-6">
     <div>
       <h2 class="text-xl font-bold text-slate-800">Clientes</h2>
@@ -46,7 +46,39 @@
   }
 
   @if (clientes().length > 0) {
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+    <!-- Vista móvil: cards -->
+    <div class="md:hidden space-y-3">
+      @for (cliente of clientes(); track cliente.id) {
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-orange-600 font-bold">{{ cliente.nombre.charAt(0).toUpperCase() }}</span>
+            </div>
+            <div class="min-w-0">
+              <p class="text-slate-800 font-semibold text-sm truncate">{{ cliente.nombre }}</p>
+              <p class="text-slate-400 text-xs truncate">{{ cliente.email }}</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+            <span class="text-slate-500 text-sm">{{ cliente.telefono }}</span>
+            <div class="flex items-center gap-1.5">
+              <button (click)="irAEditar(cliente.id)"
+                class="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              </button>
+              <button (click)="solicitarEliminar(cliente.id, cliente.nombre)"
+                class="w-8 h-8 flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Vista escritorio: tabla -->
+    <div class="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <table class="w-full">
         <thead>
           <tr class="bg-slate-50 border-b border-slate-200">
@@ -86,5 +118,6 @@
         </tbody>
       </table>
     </div>
+
   }
 </div>

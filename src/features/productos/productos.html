@@ -55,23 +55,30 @@
   </div>
 }
 
-<div class="px-6 py-8">
-  <div class="flex items-center justify-between mb-6">
-    <div>
-      <h2 class="text-xl font-bold text-slate-800">Productos</h2>
-      <p class="text-slate-500 text-sm mt-0.5">Inventario de repuestos y productos</p>
+<div class="px-4 sm:px-6 py-8">
+  <div class="mb-6">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-bold text-slate-800">Productos</h2>
+        <p class="text-slate-500 text-sm mt-0.5">Inventario de repuestos y productos</p>
+      </div>
+      <!-- Botón nuevo siempre visible arriba a la derecha -->
+      @if (canCreate()) {
+        <button (click)="irACrear()" class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg px-4 py-2 text-sm transition-colors shadow-sm flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+          Nuevo
+        </button>
+      }
     </div>
 
     @if (canCreate()) {
-      <div class="flex items-center gap-2">
-        <!-- Descargar plantilla -->
+      <!-- Botones de importación en segunda fila, wrap en móvil -->
+      <div class="flex flex-wrap items-center gap-2 mt-3">
         <button (click)="descargarPlantilla()" title="Descargar plantilla Excel"
           class="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-lg px-3 py-2 text-sm transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
           Plantilla
         </button>
-
-        <!-- Importar Excel -->
         <label class="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer shadow-sm">
           @if (importando()) {
             <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
@@ -82,12 +89,6 @@
           }
           <input type="file" accept=".xlsx" class="hidden" (change)="onFileSelected($event)" [disabled]="importando()">
         </label>
-
-        <!-- Nuevo producto -->
-        <button (click)="irACrear()" class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg px-4 py-2 text-sm transition-colors shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-          Nuevo
-        </button>
       </div>
     }
   </div>
@@ -113,7 +114,43 @@
   }
 
   @if (productos().length > 0) {
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+    <!-- Vista móvil: cards -->
+    <div class="md:hidden space-y-3">
+      @for (p of productos(); track p.id) {
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <p class="text-slate-800 font-semibold text-sm leading-tight">{{ p.nombre }}</p>
+            <span class="bg-slate-100 text-slate-600 font-mono text-xs px-2 py-0.5 rounded flex-shrink-0">{{ p.codigo }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-slate-700 font-bold text-sm">$ {{ p.precio | number:'1.0-0' }}</span>
+              <span class="text-xs font-medium px-2 py-0.5 rounded-full {{ p.stock > 10 ? 'bg-green-100 text-green-700' : p.stock > 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-600' }}">
+                {{ p.stock }} uds.
+              </span>
+            </div>
+            @if (canEdit()) {
+              <div class="flex items-center gap-1.5">
+                <button (click)="irAEditar(p.id)"
+                  class="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                </button>
+                @if (canCreate()) {
+                  <button (click)="solicitarEliminar(p.id, p.nombre)"
+                    class="w-8 h-8 flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Vista escritorio: tabla -->
+    <div class="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <table class="w-full">
         <thead>
           <tr class="bg-slate-50 border-b border-slate-200">
@@ -158,5 +195,6 @@
         </tbody>
       </table>
     </div>
+
   }
 </div>

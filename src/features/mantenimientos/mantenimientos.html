@@ -14,7 +14,7 @@
   </div>
 }
 
-<div class="px-6 py-8">
+<div class="px-4 sm:px-6 py-8">
   <div class="flex items-center justify-between mb-6">
     <div>
       <h2 class="text-xl font-bold text-slate-800">Órdenes de Trabajo</h2>
@@ -46,8 +46,72 @@
   }
 
   @if (mantenimientos().length > 0) {
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
-      <table class="w-full min-w-[820px]">
+
+    <!-- Vista móvil: cards -->
+    <div class="md:hidden space-y-3">
+      @for (m of mantenimientos(); track m.id) {
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+          <!-- Folio + Estado -->
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-mono text-base font-bold text-orange-500">{{ m.folio || '—' }}</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
+          </div>
+          <!-- Info -->
+          <div class="space-y-1.5 mb-3">
+            <div class="flex items-start gap-2">
+              <span class="text-xs text-slate-400 w-16 flex-shrink-0">Cliente</span>
+              <div>
+                <p class="text-sm font-medium text-slate-800 leading-tight">{{ m.clienteNombre }}</p>
+                <p class="text-xs text-slate-400">{{ m.clienteTelefono }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 w-16 flex-shrink-0">Vehículo</span>
+              <span class="font-mono text-xs font-bold text-slate-700 bg-blue-50 px-1.5 py-0.5 rounded">{{ m.vehiculoPlaca }}</span>
+              <span class="text-xs text-slate-500">{{ m.vehiculoMarca }} {{ m.vehiculoModelo }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 w-16 flex-shrink-0">Mecánico</span>
+              @if (m.mecanicoNombre) {
+                <span class="text-xs text-slate-600">{{ m.mecanicoNombre }}</span>
+              } @else {
+                <span class="text-xs text-slate-300">Sin asignar</span>
+              }
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 w-16 flex-shrink-0">Fecha</span>
+              <span class="text-xs text-slate-500">{{ m.fecha | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+          <!-- Total + Acciones -->
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+            <span class="text-sm font-bold text-slate-800">
+              @if (m.total > 0) { $ {{ m.total | number:'1.0-0' }} } @else { $ 0 }
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button (click)="irAEditar(m.id)" title="Ver / Editar"
+                class="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              </button>
+              <button (click)="irAImprimir(m.id)" title="Imprimir / PDF"
+                class="w-8 h-8 flex items-center justify-center bg-slate-700 hover:bg-slate-800 text-white rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+              </button>
+              @if (canDelete()) {
+                <button (click)="solicitarEliminar(m.id)" title="Eliminar"
+                  class="w-8 h-8 flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-400 hover:text-red-600 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Vista escritorio: tabla -->
+    <div class="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <table class="w-full">
         <thead>
           <tr class="bg-slate-50 border-b border-slate-200">
             <th class="text-left px-4 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-24">Folio</th>
@@ -63,8 +127,6 @@
         <tbody>
           @for (m of mantenimientos(); track m.id) {
             <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-
-              <!-- Folio -->
               <td class="px-4 py-3.5">
                 @if (m.folio) {
                   <span class="font-mono text-sm font-bold text-orange-500">{{ m.folio }}</span>
@@ -72,28 +134,18 @@
                   <span class="text-slate-300 text-xs font-mono">—</span>
                 }
               </td>
-
-              <!-- Fecha -->
               <td class="px-4 py-3.5 text-slate-500 text-sm">{{ m.fecha | date:'dd/MM/yyyy' }}</td>
-
-              <!-- Estado -->
               <td class="px-4 py-3.5">
                 <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
               </td>
-
-              <!-- Cliente -->
               <td class="px-4 py-3.5">
                 <div class="text-slate-800 text-sm font-medium leading-tight">{{ m.clienteNombre }}</div>
                 <div class="text-slate-400 text-xs mt-0.5">{{ m.clienteTelefono }}</div>
               </td>
-
-              <!-- Vehículo -->
               <td class="px-4 py-3.5">
                 <div class="font-mono text-sm font-bold text-slate-700">{{ m.vehiculoPlaca }}</div>
                 <div class="text-slate-400 text-xs mt-0.5">{{ m.vehiculoMarca }} {{ m.vehiculoModelo }}</div>
               </td>
-
-              <!-- Mecánico -->
               <td class="px-4 py-3.5">
                 @if (m.mecanicoNombre) {
                   <div class="flex items-center gap-1.5">
@@ -106,8 +158,6 @@
                   <span class="text-slate-300 text-xs">Sin asignar</span>
                 }
               </td>
-
-              <!-- Total -->
               <td class="px-4 py-3.5 text-right">
                 @if (m.total > 0) {
                   <span class="text-slate-800 text-sm font-semibold">$ {{ m.total | number:'1.0-0' }}</span>
@@ -115,8 +165,6 @@
                   <span class="text-slate-300 text-xs">$ 0</span>
                 }
               </td>
-
-              <!-- Acciones — solo iconos -->
               <td class="px-4 py-3.5">
                 <div class="flex items-center justify-end gap-1.5">
                   <button (click)="irAEditar(m.id)" title="Ver / Editar"
@@ -135,11 +183,11 @@
                   }
                 </div>
               </td>
-
             </tr>
           }
         </tbody>
       </table>
     </div>
+
   }
 </div>
