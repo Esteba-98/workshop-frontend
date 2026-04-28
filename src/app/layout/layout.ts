@@ -14,6 +14,7 @@ export class Layout implements OnInit {
   userName = signal('');
   userRole = signal('');
   roles = signal<string[]>([]);
+  sidebarOpen = signal(false);
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
@@ -28,5 +29,13 @@ export class Layout implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update(v => !v);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
   }
 }
