@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MantenimientoService } from '../../app/core/services/mantenimiento.service';
@@ -17,10 +17,32 @@ export class Mantenimientos implements OnInit {
   private router = inject(Router);
 
   mantenimientos = signal<Mantenimiento[]>([]);
+  busqueda = signal('');
+  filtroEstado = signal('');
   loading = signal(false);
   errorMessage = signal('');
   canCreate = signal(false);
   canDelete = signal(false);
+
+  readonly estados = ['', 'Pendiente', 'En Proceso', 'Completado', 'Cancelado'];
+
+  mantenimientosFiltrados = computed(() => {
+    let lista = this.mantenimientos();
+    const q = this.busqueda().toLowerCase().trim();
+    const estado = this.filtroEstado();
+    if (q) {
+      lista = lista.filter(m =>
+        m.folio?.toLowerCase().includes(q) ||
+        m.clienteNombre?.toLowerCase().includes(q) ||
+        m.vehiculoPlaca?.toLowerCase().includes(q) ||
+        m.mecanicoNombre?.toLowerCase().includes(q)
+      );
+    }
+    if (estado) {
+      lista = lista.filter(m => m.estado === estado);
+    }
+    return lista;
+  });
 
   confirmando = signal(false);
   confirmMsg = signal('');

@@ -28,12 +28,40 @@
     }
   </div>
 
+  @if (!loading() && mantenimientos().length > 0) {
+    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+      <!-- Búsqueda -->
+      <div class="relative flex-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input type="text" placeholder="Buscar por folio, cliente, placa, mecánico..."
+          [value]="busqueda()" (input)="busqueda.set($any($event.target).value)"
+          class="w-full pl-9 pr-4 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition" />
+      </div>
+      <!-- Filtro estado -->
+      <select [value]="filtroEstado()" (change)="filtroEstado.set($any($event.target).value)"
+        class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition">
+        <option value="">Todos los estados</option>
+        @for (e of estados.slice(1); track e) {
+          <option [value]="e">{{ e }}</option>
+        }
+      </select>
+    </div>
+  }
+
   @if (loading()) {
     <div class="flex justify-center py-16"><svg class="animate-spin w-7 h-7 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg></div>
   }
 
   @if (errorMessage()) {
     <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-4"><p class="text-red-600 text-sm">{{ errorMessage() }}</p></div>
+  }
+
+  @if (mantenimientosFiltrados().length === 0 && (busqueda() || filtroEstado()) && !loading()) {
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+      <p class="text-slate-500 text-sm">No se encontraron órdenes con los filtros aplicados.</p>
+    </div>
   }
 
   @if (!loading() && !errorMessage() && mantenimientos().length === 0) {
@@ -45,16 +73,16 @@
     </div>
   }
 
-  @if (mantenimientos().length > 0) {
+  @if (mantenimientosFiltrados().length > 0) {
 
     <!-- Vista móvil: cards -->
     <div class="md:hidden space-y-3">
-      @for (m of mantenimientos(); track m.id) {
+      @for (m of mantenimientosFiltrados(); track m.id) {
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
           <!-- Folio + Estado -->
           <div class="flex items-center justify-between mb-3">
             <span class="font-mono text-base font-bold text-orange-500">{{ m.folio || '—' }}</span>
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
           </div>
           <!-- Info -->
           <div class="space-y-1.5 mb-3">
@@ -125,7 +153,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (m of mantenimientos(); track m.id) {
+          @for (m of mantenimientosFiltrados(); track m.id) {
             <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
               <td class="px-4 py-3.5">
                 @if (m.folio) {
@@ -136,7 +164,7 @@
               </td>
               <td class="px-4 py-3.5 text-slate-500 text-sm">{{ m.fecha | date:'dd/MM/yyyy' }}</td>
               <td class="px-4 py-3.5">
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
               </td>
               <td class="px-4 py-3.5">
                 <div class="text-slate-800 text-sm font-medium leading-tight">{{ m.clienteNombre }}</div>

@@ -2,8 +2,8 @@
 
   <!-- Header -->
   <div class="mb-8">
-    <h2 class="text-xl font-bold text-slate-800">Dashboard</h2>
-    <p class="text-slate-500 text-sm mt-0.5">Bienvenido, {{ userName() }} — resumen del taller</p>
+    <h2 class="text-xl font-bold text-slate-800">Bienvenido, {{ userName() }}</h2>
+    <p class="text-slate-500 text-sm mt-0.5">{{ roles()[0] }} · Resumen del taller</p>
   </div>
 
   @if (loading()) {

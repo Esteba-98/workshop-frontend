@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { ClienteService } from '../../app/core/services/cliente.service';
 import { Cliente } from '../../app/core/models/cliente.model';
@@ -14,8 +14,19 @@ export class Clientes implements OnInit {
   private router = inject(Router);
 
   clientes = signal<Cliente[]>([]);
+  busqueda = signal('');
   loading = signal(false);
   errorMessage = signal('');
+
+  clientesFiltrados = computed(() => {
+    const q = this.busqueda().toLowerCase().trim();
+    if (!q) return this.clientes();
+    return this.clientes().filter(c =>
+      c.nombre.toLowerCase().includes(q) ||
+      c.email?.toLowerCase().includes(q) ||
+      c.telefono?.toLowerCase().includes(q)
+    );
+  });
 
   // Confirmación
   confirmando = signal(false);
