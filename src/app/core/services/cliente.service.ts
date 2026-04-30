@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environment/environment';
 import { Cliente, CreateClienteDto, UpdateClienteDto } from '../models/cliente.model';
+import { ClienteHistorial } from '../models/historial.model';
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +32,9 @@ export class ClienteService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  getHistorial(id: string): Observable<ClienteHistorial> {
+    return this.http.get<ClienteHistorial>(`${this.apiUrl}/${id}/historial`);
   }
 }

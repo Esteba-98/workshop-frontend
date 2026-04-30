@@ -17,11 +17,13 @@ export const routes: Routes = [
       { path: 'clientes', canActivate: [roleGuard(['Administrador', 'User'])], loadComponent: () => import('../features/clientes/clientes').then(m => m.Clientes) },
       { path: 'clientes/nuevo', canActivate: [roleGuard(['Administrador', 'User'])], loadComponent: () => import('../features/clientes/cliente-form/cliente-form').then(m => m.ClienteForm) },
       { path: 'clientes/:id/editar', canActivate: [roleGuard(['Administrador', 'User'])], loadComponent: () => import('../features/clientes/cliente-form/cliente-form').then(m => m.ClienteForm) },
+      { path: 'clientes/:id/historial', canActivate: [roleGuard(['Administrador', 'User'])], loadComponent: () => import('../features/clientes/cliente-historial/cliente-historial').then(m => m.ClienteHistorialComponent) },
 
       // Vehículos — Administrador, Mecanico, User (User puede crear y editar)
       { path: 'vehiculos', canActivate: [roleGuard(['Administrador', 'Mecanico', 'User'])], loadComponent: () => import('../features/vehiculos/vehiculos').then(m => m.Vehiculos) },
       { path: 'vehiculos/nuevo', canActivate: [roleGuard(['Administrador', 'User'])], loadComponent: () => import('../features/vehiculos/vehiculo-form/vehiculo-form').then(m => m.VehiculoForm) },
       { path: 'vehiculos/:id/editar', canActivate: [roleGuard(['Administrador', 'User'])], loadComponent: () => import('../features/vehiculos/vehiculo-form/vehiculo-form').then(m => m.VehiculoForm) },
+      { path: 'vehiculos/:id/historial', canActivate: [roleGuard(['Administrador', 'Mecanico', 'User'])], loadComponent: () => import('../features/vehiculos/vehiculo-historial/vehiculo-historial').then(m => m.VehiculoHistorialComponent) },
 
       // Productos — OperarioAlmacen tiene control total
       { path: 'productos', canActivate: [roleGuard(['Administrador', 'Mecanico', 'OperarioAlmacen'])], loadComponent: () => import('../features/productos/productos').then(m => m.Productos) },

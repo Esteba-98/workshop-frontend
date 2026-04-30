@@ -87,4 +87,5 @@ export class Vehiculos implements OnInit {
   irACrear(): void { this.router.navigate(['/vehiculos/nuevo']); }
   irAEditar(id: string): void { this.router.navigate(['/vehiculos', id, 'editar']); }
   irAMantenimiento(vehiculoId: string): void { this.router.navigate(['/mantenimientos/nuevo'], { queryParams: { vehiculoId } }); }
+  irAHistorial(id: string): void { this.router.navigate(['/vehiculos', id, 'historial']); }
 }

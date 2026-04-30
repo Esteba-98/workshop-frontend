@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environment/environment';
 import { Vehiculo, CreateVehiculoDto, UpdateVehiculoDto } from '../models/vehiculo.model';
+import { VehiculoHistorial } from '../models/historial.model';
 
 @Injectable({ providedIn: 'root' })
 export class VehiculoService {
@@ -14,4 +15,5 @@ export class VehiculoService {
   create(data: CreateVehiculoDto): Observable<Vehiculo> { return this.http.post<Vehiculo>(this.apiUrl, data); }
   update(id: string, data: UpdateVehiculoDto): Observable<Vehiculo> { return this.http.put<Vehiculo>(`${this.apiUrl}/${id}`, data); }
   delete(id: string): Observable<void> { return this.http.delete<void>(`${this.apiUrl}/${id}`); }
+  getHistorial(id: string): Observable<VehiculoHistorial> { return this.http.get<VehiculoHistorial>(`${this.apiUrl}/${id}/historial`); }
 }

@@ -67,4 +67,5 @@ export class Clientes implements OnInit {
 
   irACrear(): void { this.router.navigate(['/clientes/nuevo']); }
   irAEditar(id: string): void { this.router.navigate(['/clientes', id, 'editar']); }
+  irAHistorial(id: string): void { this.router.navigate(['/clientes', id, 'historial']); }
 }
