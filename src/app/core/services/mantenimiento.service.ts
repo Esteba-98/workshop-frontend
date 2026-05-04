@@ -17,4 +17,12 @@ export class MantenimientoService {
   addItem(id: string, data: AddItemDto): Observable<Mantenimiento> { return this.http.post<Mantenimiento>(`${this.apiUrl}/${id}/items`, data); }
   removeItem(id: string, itemId: string): Observable<Mantenimiento> { return this.http.delete<Mantenimiento>(`${this.apiUrl}/${id}/items/${itemId}`); }
   togglePagado(id: string): Observable<Mantenimiento> { return this.http.patch<Mantenimiento>(`${this.apiUrl}/${id}/pagado`, {}); }
+  exportExcel(desde?: string, hasta?: string): Observable<Blob> {
+    const params = [
+      desde ? `desde=${desde}` : '',
+      hasta ? `hasta=${hasta}` : ''
+    ].filter(Boolean).join('&');
+    const url = `${this.apiUrl}/export/excel${params ? '?' + params : ''}`;
+    return this.http.get(url, { responseType: 'blob' });
+  }
 }

@@ -30,6 +30,9 @@ export const routes: Routes = [
       { path: 'productos/nuevo', canActivate: [roleGuard(['Administrador', 'OperarioAlmacen'])], loadComponent: () => import('../features/productos/producto-form/producto-form').then(m => m.ProductoForm) },
       { path: 'productos/:id/editar', canActivate: [roleGuard(['Administrador', 'OperarioAlmacen'])], loadComponent: () => import('../features/productos/producto-form/producto-form').then(m => m.ProductoForm) },
 
+      // Búsqueda global — todos los roles
+      { path: 'busqueda', loadComponent: () => import('../features/busqueda/busqueda').then(m => m.Busqueda) },
+
       // Usuarios — solo Administrador
       { path: 'usuarios', canActivate: [roleGuard(['Administrador'])], loadComponent: () => import('../features/usuarios/usuarios').then(m => m.Usuarios) },
 
