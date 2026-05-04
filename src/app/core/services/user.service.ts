@@ -9,6 +9,7 @@ export interface UsuarioBackend {
   nombre: string;
   email: string;
   rol: string;
+  activo: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -38,5 +39,9 @@ export class UserService {
 
   deleteUser(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  toggleActivo(id: string): Observable<{ activo: boolean }> {
+    return this.http.patch<{ activo: boolean }>(`${this.apiUrl}/${id}/toggle-activo`, {});
   }
 }

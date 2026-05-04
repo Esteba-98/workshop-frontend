@@ -24,6 +24,7 @@ export interface Mantenimiento {
   fecha: string;
   fechaEntrega: string | null;
   estado: string;
+  pagado: boolean;
   descripcion: string;
   diagnostico: string;
   observaciones: string;

@@ -50,6 +50,9 @@ export class MantenimientoForm implements OnInit {
   savingItem = signal(false);
   removingItemId = signal<string | null>(null);
 
+  whatsappUrl = signal<string | null>(null);
+  guardadoOk  = signal(false);
+
   esOrdenCerrada = computed(() => {
     if (this.esAdmin()) return false;
     const e = this.estadoActual();
@@ -263,6 +266,7 @@ export class MantenimientoForm implements OnInit {
 
     if (this.isEditing()) {
       const id = this.mantenimientoId()!;
+      const estadoAnterior = this.estadoActual();
       this.mantenimientoService.update(id, {
         id,
         clienteId:    raw.clienteId!,
@@ -279,7 +283,16 @@ export class MantenimientoForm implements OnInit {
           this.estadoActual.set(m.estado);
           this.currentMantenimiento.set(m);
           this.loading.set(false);
-          this.router.navigate(['/mantenimientos']);
+
+          const cambioNotificable = m.estado !== estadoAnterior &&
+            ['En Proceso', 'Completado'].includes(m.estado);
+
+          if (cambioNotificable) {
+            this.whatsappUrl.set(this.buildWhatsappUrl(m.estado, m.clienteId, m.vehiculoId));
+            this.guardadoOk.set(true);
+          } else {
+            this.router.navigate(['/mantenimientos']);
+          }
         },
         error: () => { this.errorMessage.set('Error al actualizar.'); this.loading.set(false); }
       });
@@ -301,6 +314,33 @@ export class MantenimientoForm implements OnInit {
     }
   }
 
+  togglePagado(): void {
+    const id = this.mantenimientoId();
+    if (!id) return;
+    this.mantenimientoService.togglePagado(id).subscribe({
+      next: (m) => this.currentMantenimiento.set(m),
+      error: () => this.errorMessage.set('Error al actualizar el estado de pago.')
+    });
+  }
+
   cancelar(): void { this.router.navigate(['/mantenimientos']); }
   verOrden(): void { this.router.navigate(['/mantenimientos', this.mantenimientoId(), 'imprimir']); }
+
+  buildWhatsappUrl(estado: string, clienteId: string, vehiculoId: string): string {
+    const cliente  = this.clientes().find(c => c.id === clienteId);
+    const vehiculo = this.vehiculos().find(v => v.id === vehiculoId);
+    if (!cliente || !vehiculo) return '';
+
+    const digits   = cliente.telefono.replace(/\D/g, '');
+    const phone    = digits.startsWith('57') ? digits : `57${digits}`;
+    const nombre   = cliente.nombre.split(' ')[0];
+    const placa    = vehiculo.placa;
+    const vehiculoLabel = `${vehiculo.marca} ${vehiculo.modelo} (${placa})`;
+
+    const msg = estado === 'En Proceso'
+      ? `Hola ${nombre}, tu vehículo ${vehiculoLabel} ya está siendo atendido en el taller. Te avisamos cuando esté listo. — Taller WorkShop`
+      : `Hola ${nombre}, tu vehículo ${vehiculoLabel} ya está listo para recoger. — Taller WorkShop`;
+
+    return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  }
 }

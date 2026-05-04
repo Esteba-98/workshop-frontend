@@ -194,12 +194,19 @@
       } @else {
         <div class="space-y-2">
           @for (u of usuariosFiltrados(); track u.id) {
-            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-              <div class="w-9 h-9 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span class="text-orange-600 font-bold text-sm">{{ u.nombre.charAt(0).toUpperCase() }}</span>
+            <div class="flex items-center gap-3 p-3 rounded-xl border transition-colors
+              {{ u.activo ? 'bg-slate-50 border-slate-100' : 'bg-red-50/40 border-red-100' }}">
+              <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
+                {{ u.activo ? 'bg-orange-100' : 'bg-slate-200' }}">
+                <span class="font-bold text-sm {{ u.activo ? 'text-orange-600' : 'text-slate-400' }}">{{ u.nombre.charAt(0).toUpperCase() }}</span>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-slate-800 text-sm font-medium truncate">{{ u.nombre }}</p>
+                <div class="flex items-center gap-1.5">
+                  <p class="text-sm font-medium truncate {{ u.activo ? 'text-slate-800' : 'text-slate-400 line-through' }}">{{ u.nombre }}</p>
+                  @if (!u.activo) {
+                    <span class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-600 flex-shrink-0">Inactivo</span>
+                  }
+                </div>
                 <p class="text-slate-400 text-xs truncate">{{ u.email }}</p>
               </div>
               <span class="text-xs font-semibold px-2 py-1 rounded-full flex-shrink-0 {{ getRolColor(u.rol) }}">
@@ -209,6 +216,16 @@
                 <button (click)="abrirEditar(u)" title="Editar usuario"
                   class="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                </button>
+                <button (click)="toggleActivo(u)"
+                  [title]="u.activo ? 'Desactivar usuario' : 'Activar usuario'"
+                  class="p-1.5 rounded-lg transition-colors
+                    {{ u.activo ? 'text-slate-400 hover:text-amber-500 hover:bg-amber-50' : 'text-green-500 hover:text-green-600 hover:bg-green-50' }}">
+                  @if (u.activo) {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  }
                 </button>
                 <button (click)="solicitarEliminarUsuario(u.id)" title="Eliminar usuario"
                   class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">

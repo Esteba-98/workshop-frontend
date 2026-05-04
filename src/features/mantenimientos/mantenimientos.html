@@ -82,7 +82,12 @@
           <!-- Folio + Estado -->
           <div class="flex items-center justify-between mb-3">
             <span class="font-mono text-base font-bold text-orange-500">{{ m.folio || '—' }}</span>
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
+            <div class="flex items-center gap-1.5">
+              @if (canDelete() && m.pagado) {
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">Pagado</span>
+              }
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
+            </div>
           </div>
           <!-- Info -->
           <div class="space-y-1.5 mb-3">
@@ -164,7 +169,12 @@
               </td>
               <td class="px-4 py-3.5 text-slate-500 text-sm">{{ m.fecha | date:'dd/MM/yyyy' }}</td>
               <td class="px-4 py-3.5">
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
+                <div class="flex flex-col gap-1">
+                  <span class="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap w-fit {{ estadoClass(m.estado) }}">{{ m.estado }}</span>
+                  @if (canDelete() && m.pagado) {
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full w-fit bg-emerald-100 text-emerald-700 border border-emerald-200">Pagado</span>
+                  }
+                </div>
               </td>
               <td class="px-4 py-3.5">
                 <div class="text-slate-800 text-sm font-medium leading-tight">{{ m.clienteNombre }}</div>

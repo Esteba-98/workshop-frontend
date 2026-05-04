@@ -195,6 +195,13 @@ export class Usuarios implements OnInit {
     return ROLES.find(r => r.value === value)?.label ?? value;
   }
 
+  toggleActivo(u: UsuarioBackend): void {
+    this.userService.toggleActivo(u.id).subscribe({
+      next: () => this.cargarUsuarios(),
+      error: () => {}
+    });
+  }
+
   getRolColor(value: string): string {
     switch (value) {
       case 'Administrador': return 'bg-red-100 text-red-700';
